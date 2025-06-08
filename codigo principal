@@ -1,229 +1,198 @@
 #include <iostream>
 using namespace std;
 
-// Estructura del nodo Proceso
 struct Proceso {
     int id;
-    char nombre[50];
+    char nombre[30];
     int prioridad;
     int tamanoMemoria;
-    char estado[20];
+    char estado[15];
     Proceso* siguiente;
 };
 
-// Clase que maneja la pila enlazada
-class PilaProcesos {
-private:
-    Proceso* tope;
+Proceso* inicio = NULL;
 
-    // Copia texto desde fuente hacia destino (porque no usamos <string>)
-    void copiarTexto(char destino[], const char fuente[]) {
-        int i = 0;
-        while (fuente[i] != '\0') {
-            destino[i] = fuente[i];
-            i++;
-        }
-        destino[i] = '\0';
-    }
+// Insertar proceso al final
+void insertarProceso() {
+    Proceso* nuevo = new Proceso();
+    
+    cout << "ID del proceso: ";
+    cin >> nuevo->id;
+    cin.ignore();
 
-public:
-    PilaProcesos() {
-        tope = NULL;
-    }
+    cout << "Nombre del proceso: ";
+    cin.getline(nuevo->nombre, 30);
 
-    // Insertar proceso (al tope de la pila)
-    void insertarProceso(int id, const char nombre[], int prioridad, int tamanoMemoria, const char estado[]) {
-        Proceso* nuevo = new Proceso;
-        nuevo->id = id;
-        copiarTexto(nuevo->nombre, nombre);
-        nuevo->prioridad = prioridad;
-        nuevo->tamanoMemoria = tamanoMemoria;
-        copiarTexto(nuevo->estado, estado);
-        nuevo->siguiente = tope;
-        tope = nuevo;
-        cout << "? Proceso insertado.\n";
-    }
+    cout << "Prioridad (1-5): ";
+    cin >> nuevo->prioridad;
 
-    // Buscar proceso por ID
-    Proceso* buscarProcesoPorID(int id) {
-        Proceso* actual = tope;
-        while (actual != NULL) {
-            if (actual->id == id) {
-                return actual;
-            }
+    cout << "Tamaño de memoria requerida (MB): ";
+    cin >> nuevo->tamanoMemoria;
+
+    cin.ignore();
+    cout << "Estado (nuevo, listo, ejecutando, bloqueado, finalizado): ";
+    cin.getline(nuevo->estado, 15);
+
+    nuevo->siguiente = NULL;
+
+    if (inicio == NULL) {
+        inicio = nuevo;
+    } else {
+        Proceso* actual = inicio;
+        while (actual->siguiente != NULL) {
             actual = actual->siguiente;
         }
-        return NULL;
+        actual->siguiente = nuevo;
     }
 
-    // Modificar proceso (prioridad y estado)
-    void modificarProceso(int id, int nuevaPrioridad, const char nuevoEstado[]) {
-        Proceso* p = buscarProcesoPorID(id);
-        if (p != NULL) {
-            p->prioridad = nuevaPrioridad;
-            copiarTexto(p->estado, nuevoEstado);
-            cout << "? Proceso modificado correctamente.\n";
-        } else {
-            cout << "? Proceso no encontrado.\n";
+    cout << "Proceso insertado correctamente.\n";
+}
+
+// Buscar proceso por ID
+void buscarProcesoPorID() {
+    int id;
+    cout << "Ingrese el ID a buscar: ";
+    cin >> id;
+
+    Proceso* actual = inicio;
+    while (actual != NULL) {
+        if (actual->id == id) {
+            cout << "Proceso encontrado:\n";
+            cout << "ID: " << actual->id << "\n";
+            cout << "Nombre: " << actual->nombre << "\n";
+            cout << "Prioridad: " << actual->prioridad << "\n";
+            cout << "Memoria: " << actual->tamanoMemoria << " MB\n";
+            cout << "Estado: " << actual->estado << "\n";
+            return;
         }
+        actual = actual->siguiente;
     }
+    cout << "Proceso no encontrado.\n";
+}
 
-    // Eliminar proceso por ID
-    void eliminarProceso(int id) {
-        if (tope == NULL) {
-            cout << "? La pila está vacía.\n";
-            return;
-        }
+// Modificar proceso por ID
+void modificarProceso() {
+    int id;
+    cout << "Ingrese el ID del proceso a modificar: ";
+    cin >> id;
 
-        // Caso especial: eliminar el tope
-        if (tope->id == id) {
-            Proceso* eliminado = tope;
-            tope = tope->siguiente;
-            delete eliminado;
-            cout << "? Proceso eliminado del tope.\n";
-            return;
-        }
+    Proceso* actual = inicio;
+    while (actual != NULL) {
+        if (actual->id == id) {
+            cout << "Proceso encontrado. ¿Qué desea modificar?\n";
+            cout << "1. Prioridad\n2. Estado\nOpción: ";
+            int opcion;
+            cin >> opcion;
+            cin.ignore();
 
-        // Buscar en el resto de la pila
-        Proceso* anterior = tope;
-        Proceso* actual = tope->siguiente;
-
-        while (actual != NULL) {
-            if (actual->id == id) {
-                anterior->siguiente = actual->siguiente;
-                delete actual;
-                cout << "? Proceso eliminado.\n";
-                return;
+            if (opcion == 1) {
+                cout << "Nueva prioridad (1-5): ";
+                cin >> actual->prioridad;
+                cout << "Prioridad actualizada.\n";
+            } else if (opcion == 2) {
+                cout << "Nuevo estado: ";
+                cin.ignore();
+                cin.getline(actual->estado, 15);
+                cout << "Estado actualizado.\n";
+            } else {
+                cout << "Opción no válida.\n";
             }
-            anterior = actual;
-            actual = actual->siguiente;
-        }
-
-        cout << "? Proceso no encontrado.\n";
-    }
-
-    // Mostrar todos los procesos en la pila
-    void mostrarProcesos() {
-        Proceso* temp = tope;
-        if (temp == NULL) {
-            cout << "? La pila está vacía.\n";
             return;
         }
-
-        cout << "\n--- Lista de Procesos ---\n";
-        while (temp != NULL) {
-            cout << "ID: " << temp->id
-                 << " | Nombre: " << temp->nombre
-                 << " | Prioridad: " << temp->prioridad
-                 << " | Memoria: " << temp->tamanoMemoria
-                 << " | Estado: " << temp->estado << "\n";
-            temp = temp->siguiente;
-        }
+        actual = actual->siguiente;
     }
-};
 
-// Programa principal
+    cout << "Proceso no encontrado.\n";
+}
+
+// Eliminar proceso por ID
+void eliminarProceso() {
+    int id;
+    cout << "Ingrese el ID del proceso a eliminar: ";
+    cin >> id;
+
+    Proceso* actual = inicio;
+    Proceso* anterior = NULL;
+
+    while (actual != NULL && actual->id != id) {
+        anterior = actual;
+        actual = actual->siguiente;
+    }
+
+    if (actual == NULL) {
+        cout << "Proceso no encontrado.\n";
+        return;
+    }
+
+    if (anterior == NULL) {
+        inicio = actual->siguiente;
+    } else {
+        anterior->siguiente = actual->siguiente;
+    }
+
+    delete actual;
+    cout << "Proceso eliminado.\n";
+}
+
+// Mostrar todos los procesos
+void mostrarProcesos() {
+    Proceso* actual = inicio;
+    if (actual == NULL) {
+        cout << "No hay procesos registrados.\n";
+        return;
+    }
+
+    cout << "Lista de procesos:\n";
+    while (actual != NULL) {
+        cout << "-----------------------------\n";
+        cout << "ID: " << actual->id << "\n";
+        cout << "Nombre: " << actual->nombre << "\n";
+        cout << "Prioridad: " << actual->prioridad << "\n";
+        cout << "Memoria: " << actual->tamanoMemoria << " MB\n";
+        cout << "Estado: " << actual->estado << "\n";
+        actual = actual->siguiente;
+    }
+}
+
+// Menú principal
 int main() {
-    PilaProcesos pila;
-    int opcion, id, prioridad, memoria;
-    char nombre[50], estado[20];
+    int opcion;
 
     do {
-        cout << "\n--- Administrador de Tareas (Pila) ---\n";
-        cout << "1. Insertar Proceso\n";
-        cout << "2. Buscar Proceso por ID\n";
-        cout << "3. Modificar Proceso\n";
-        cout << "4. Eliminar Proceso\n";
-        cout << "5. Mostrar Procesos\n";
+        cout << "\n=== Administrador de Tareas ===\n";
+        cout << "1. Insertar proceso\n";
+        cout << "2. Buscar proceso por ID\n";
+        cout << "3. Modificar proceso\n";
+        cout << "4. Eliminar proceso\n";
+        cout << "5. Mostrar todos los procesos\n";
         cout << "0. Salir\n";
-        cout << "Seleccione una opcion: ";
+        cout << "Seleccione una opción: ";
         cin >> opcion;
-
-        // Validar entrada del menú
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(100, '\n');
-            cout << "? Entrada inválida. Intente nuevamente.\n";
-            continue;
-        }
+        cin.ignore();
 
         switch (opcion) {
             case 1:
-                cout << "ID: ";
-                cin >> id;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? ID inválido.\n"; break; }
-
-                cout << "Nombre: ";
-                cin >> nombre;
-
-                cout << "Prioridad: ";
-                cin >> prioridad;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? Prioridad inválida.\n"; break; }
-
-                cout << "Tamaño de memoria: ";
-                cin >> memoria;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? Memoria inválida.\n"; break; }
-
-                cout << "Estado: ";
-                cin >> estado;
-
-                pila.insertarProceso(id, nombre, prioridad, memoria, estado);
+                insertarProceso();
                 break;
-
             case 2:
-                cout << "ID a buscar: ";
-                cin >> id;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? ID inválido.\n"; break; }
-
-                {
-                    Proceso* p = pila.buscarProcesoPorID(id);
-                    if (p != NULL) {
-                        cout << "? Proceso encontrado:\n";
-                        cout << "ID: " << p->id
-                             << " | Nombre: " << p->nombre
-                             << " | Prioridad: " << p->prioridad
-                             << " | Memoria: " << p->tamanoMemoria
-                             << " | Estado: " << p->estado << "\n";
-                    } else {
-                        cout << "? Proceso no encontrado.\n";
-                    }
-                }
+                buscarProcesoPorID();
                 break;
-
             case 3:
-                cout << "ID del proceso a modificar: ";
-                cin >> id;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? ID inválido.\n"; break; }
-
-                cout << "Nueva prioridad: ";
-                cin >> prioridad;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? Prioridad inválida.\n"; break; }
-
-                cout << "Nuevo estado: ";
-                cin >> estado;
-
-                pila.modificarProceso(id, prioridad, estado);
+                modificarProceso();
                 break;
-
             case 4:
-                cout << "ID del proceso a eliminar: ";
-                cin >> id;
-                if (cin.fail()) { cin.clear(); cin.ignore(100, '\n'); cout << "? ID inválido.\n"; break; }
-
-                pila.eliminarProceso(id);
+                eliminarProceso();
                 break;
-
             case 5:
-                pila.mostrarProcesos();
+                mostrarProcesos();
                 break;
-
             case 0:
-                cout << "?? Saliendo del programa...\n";
+                cout << "Saliendo del programa.\n";
                 break;
-
             default:
-                cout << "? Opción inválida.\n";
+                cout << "Opción no válida.\n";
         }
+
     } while (opcion != 0);
 
     return 0;
