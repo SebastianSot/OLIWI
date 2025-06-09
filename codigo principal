@@ -85,8 +85,6 @@ void insertarProceso() {
     cout << "Prioridad (1-5): ";
     cin >> nuevo->prioridad;
 
-    cout << "Tamaño de memoria requerida (MB): ";
-    cin >> nuevo->tamanoMemoria;
 
     cin.ignore();
     cout << "Estado (nuevo, listo, ejecutando, bloqueado, finalizado): ";
@@ -120,7 +118,6 @@ void buscarProcesoPorID() {
             cout << "ID: " << actual->id << "\n";
             cout << "Nombre: " << actual->nombre << "\n";
             cout << "Prioridad: " << actual->prioridad << "\n";
-            cout << "Memoria: " << actual->tamanoMemoria << " MB\n";
             cout << "Estado: " << actual->estado << "\n";
             return;
         }
@@ -207,7 +204,6 @@ void mostrarProcesos() {
         cout << "ID: " << actual->id << "\n";
         cout << "Nombre: " << actual->nombre << "\n";
         cout << "Prioridad: " << actual->prioridad << "\n";
-        cout << "Memoria: " << actual->tamanoMemoria << " MB\n";
         cout << "Estado: " << actual->estado << "\n";
         actual = actual->siguiente;
     }
