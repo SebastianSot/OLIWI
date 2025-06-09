@@ -9,7 +9,19 @@ struct Proceso {
     Proceso* siguiente;
 };
 
+//ESTRUCTURA PARA LA COLA 
+struct ProcesoCola {
+    int id;
+    char nombre[30];
+    int prioridad;
+    int tamanoMemoria;
+    char estado[15];
+    ProcesoCola* siguiente;
+};
+
 Proceso* inicio = NULL;
+ProcesoCola* inicioCola = NULL; // OTRO PUNTERO ESPECIL PARA EL USO DE COLAS
+
 
 // Estructura para el bloque de memoria en la pila
 struct BloqueMemoria {
@@ -208,6 +220,109 @@ void mostrarProcesos() {
     }
 }
 
+//FUNCION PARA ENCOLAR PROCESOS 
+void encolarProceso() {
+    ProcesoCola* nuevo = new ProcesoCola();
+    
+    cout << "=== ENCOLAR PROCESO EN COLA DE PRIORIDAD ===\n";
+    cout << "ID del proceso: ";
+    cin >> nuevo->id;
+    cin.ignore();
+
+    cout << "Nombre del proceso: ";
+    cin.getline(nuevo->nombre, 30);
+
+    cout << "Prioridad (1=Alta, 2=Media-Alta, 3=Media, 4=Media-Baja, 5=Baja): ";
+    cin >> nuevo->prioridad;
+
+    cout << "TamaÒo de memoria (MB): ";
+    cin >> nuevo->tamanoMemoria;
+
+    cin.ignore();
+    cout << "Estado (nuevo, listo, ejecutando, bloqueado, finalizado): ";
+    cin.getline(nuevo->estado, 15);
+
+    nuevo->siguiente = NULL;
+
+    // Insertar en la posiciÛn correcta seg˙n prioridad
+    if (inicioCola == NULL || nuevo->prioridad < inicioCola->prioridad) {
+        // Insertar al inicio si la cola est· vacÌa o tiene mayor prioridad
+        nuevo->siguiente = inicioCola;
+        inicioCola = nuevo;
+    } else {
+        // Buscar la posiciÛn correcta
+        ProcesoCola* actual = inicioCola;
+        while (actual->siguiente != NULL && actual->siguiente->prioridad <= nuevo->prioridad) {
+            actual = actual->siguiente;
+        }
+        nuevo->siguiente = actual->siguiente;
+        actual->siguiente = nuevo;
+    }
+
+    cout << "Proceso encolado correctamente seg˙n prioridad.\n";
+}
+
+//FUNCION PARA DESENCOLAR PROCESOS 
+void desencolarProceso() {
+    cout << "=== DESENCOLAR PROCESO DE MAYOR PRIORIDAD ===\n";
+    
+    if (inicioCola == NULL) {
+        cout << "La cola de prioridad est· vacÌa.\n";
+        return;
+    }
+
+    ProcesoCola* procesoDesencolado = inicioCola;
+    inicioCola = inicioCola->siguiente;
+
+    cout << "Proceso desencolado:\n";
+    cout << "-----------------------------\n";
+    cout << "ID: " << procesoDesencolado->id << "\n";
+    cout << "Nombre: " << procesoDesencolado->nombre << "\n";
+    cout << "Prioridad: " << procesoDesencolado->prioridad << "\n";
+    cout << "TamaÒo Memoria: " << procesoDesencolado->tamanoMemoria << " MB\n";
+    cout << "Estado: " << procesoDesencolado->estado << "\n";
+    cout << "-----------------------------\n";
+
+    delete procesoDesencolado;
+    cout << "Proceso eliminado de la cola de prioridad.\n";
+}
+
+//FUNCION PARA MOSTRAR COLA 
+void mostrarCola() {
+    cout << "=== COLA DE PRIORIDAD ===\n";
+    
+    if (inicioCola == NULL) {
+        cout << "La cola de prioridad est· vacÌa.\n";
+        return;
+    }
+
+    cout << "Procesos en cola (ordenados por prioridad):\n";
+    ProcesoCola* actual = inicioCola;
+    int posicion = 1;
+    
+    while (actual != NULL) {
+        cout << "\n--- PosiciÛn " << posicion << " ---\n";
+        cout << "ID: " << actual->id << "\n";
+        cout << "Nombre: " << actual->nombre << "\n";
+        cout << "Prioridad: " << actual->prioridad;
+        
+        // Mostrar descripciÛn de la prioridad
+        switch(actual->prioridad) {
+            case 1: cout << " (Alta)"; break;
+            case 2: cout << " (Media-Alta)"; break;
+            case 3: cout << " (Media)"; break;
+            case 4: cout << " (Media-Baja)"; break;
+            case 5: cout << " (Baja)"; break;
+        }
+        
+        cout << "\nTamaÒo Memoria: " << actual->tamanoMemoria << " MB\n";
+        cout << "Estado: " << actual->estado << "\n";
+        
+        actual = actual->siguiente;
+        posicion++;
+    }
+}
+
 // Men√∫ principal
 int main() {
     int opcion;
@@ -222,6 +337,9 @@ int main() {
         cout << "6. Asignar memoria\n";
         cout << "7. Liberar memoria\n";
         cout << "8. Ver pila de memoria\n";
+        cout << "9. Encolar proceso (por prioridad)\n";
+        cout << "10. Desencolar proceso (mayor prioridad)\n";
+        cout << "11. Mostrar cola de prioridad\n";
         cout << "0. Salir\n";
         cout << "Seleccione una opci√≥n: ";
         cin >> opcion;
@@ -251,6 +369,16 @@ int main() {
                 break;
             case 8:
                 verMemoria();
+                break;
+                
+            case 9:
+                encolarProceso();
+                break;
+            case 10:
+                desencolarProceso();
+                break;
+            case 11:
+                mostrarCola();
                 break;
 
             case 0:
