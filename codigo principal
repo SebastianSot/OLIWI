@@ -12,6 +12,65 @@ struct Proceso {
 
 Proceso* inicio = NULL;
 
+// Estructura para el bloque de memoria en la pila
+struct BloqueMemoria {
+    int idProceso;
+    int tamano;
+    BloqueMemoria* siguiente;
+};
+
+// Puntero al tope de la pila
+BloqueMemoria* topeMemoria = NULL;
+
+// Asignar memoria (push)
+void asignarMemoria() {
+    int id, tamano;
+    cout << "ID del proceso que solicita memoria: ";
+    cin >> id;
+    cout << "Tamaño de memoria a asignar (MB): ";
+    cin >> tamano;
+
+    BloqueMemoria* nuevo = new BloqueMemoria();
+    nuevo->idProceso = id;
+    nuevo->tamano = tamano;
+    nuevo->siguiente = topeMemoria;
+    topeMemoria = nuevo;
+
+    cout << "Memoria asignada correctamente.\n";
+}
+
+// Liberar memoria (pop)
+void liberarMemoria() {
+    if (topeMemoria == NULL) {
+        cout << "No hay memoria para liberar.\n";
+        return;
+    }
+
+    BloqueMemoria* temp = topeMemoria;
+    topeMemoria = topeMemoria->siguiente;
+
+    cout << "Memoria liberada del proceso ID: " << temp->idProceso << ", Tamaño: " << temp->tamano << " MB\n";
+    delete temp;
+}
+
+// Ver contenido de la pila de memoria
+void verMemoria() {
+    if (topeMemoria == NULL) {
+        cout << "La pila de memoria está vacía.\n";
+        return;
+    }
+
+    cout << "Contenido de la pila de memoria (LIFO):\n";
+    BloqueMemoria* actual = topeMemoria;
+    while (actual != NULL) {
+        cout << "-----------------------------\n";
+        cout << "ID Proceso: " << actual->idProceso << "\n";
+        cout << "Tamaño: " << actual->tamano << " MB\n";
+        actual = actual->siguiente;
+    }
+}
+
+
 // Insertar proceso al final
 void insertarProceso() {
     Proceso* nuevo = new Proceso();
@@ -165,6 +224,9 @@ int main() {
         cout << "3. Modificar proceso\n";
         cout << "4. Eliminar proceso\n";
         cout << "5. Mostrar todos los procesos\n";
+        cout << "6. Asignar memoria\n";
+        cout << "7. Liberar memoria\n";
+        cout << "8. Ver pila de memoria\n";
         cout << "0. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
@@ -186,6 +248,16 @@ int main() {
             case 5:
                 mostrarProcesos();
                 break;
+            case 6:
+                asignarMemoria();
+                break;
+            case 7:
+                liberarMemoria();
+                break;
+            case 8:
+                verMemoria();
+                break;
+
             case 0:
                 cout << "Saliendo del programa.\n";
                 break;
