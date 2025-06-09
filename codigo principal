@@ -5,7 +5,6 @@ struct Proceso {
     int id;
     char nombre[30];
     int prioridad;
-    int tamanoMemoria;
     char estado[15];
     Proceso* siguiente;
 };
