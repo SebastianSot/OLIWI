@@ -1,33 +1,24 @@
 #include <iostream>
 using namespace std;
-//ESTRUCTURA ORIGINAL USADA PARA LAS LISTAS ENLAZADAS
-struct Proceso {
-    int id;
-    char nombre[30];
-    int prioridad;
-    char estado[15];
-    Proceso* siguiente;//PUNTERO AL SIGUIENTE PROCESO EN LA LISTA
-};
 
-//ESTRUCTURA PARA LA COLA 
-struct ProcesoCola {
+struct Proceso {
     int id;
     char nombre[30];
     int prioridad;
     int tamanoMemoria;
     char estado[15];
-    ProcesoCola* siguiente;//PUNTERO AL SIGUIENTE PROCESO EN LA COLA
+    Proceso* siguiente;
 };
 
-Proceso* inicio = NULL; //PUNTERO AL PRIMER PROCESO DE LA LISTA
-ProcesoCola* inicioCola = NULL; // PUNTERO AL PRIMER PROCESO DE LA COLA
+Proceso* inicio = NULL;
+Proceso* frenteCola = NULL;
 
 
 // Estructura para el bloque de memoria en la pila
 struct BloqueMemoria {
     int idProceso;
     int tamano;
-    BloqueMemoria* siguiente; //PUNTERO AL SIGUIENTE BLOQUE EN LA PILA
+    BloqueMemoria* siguiente;
 };
 
 // Puntero al tope de la pila
@@ -40,11 +31,10 @@ void asignarMemoria() {
     cin >> id;
     cout << "TamaÃ±o de memoria a asignar (MB): ";
     cin >> tamano;
- 	// Crear nuevo bloque de memoria
+
     BloqueMemoria* nuevo = new BloqueMemoria();
     nuevo->idProceso = id;
     nuevo->tamano = tamano;
-    // PUSH Insertar al tope de la pila
     nuevo->siguiente = topeMemoria;
     topeMemoria = nuevo;
 
@@ -53,14 +43,12 @@ void asignarMemoria() {
 
 // Liberar memoria (pop)
 void liberarMemoria() {
-	// Verificar si hay memoria para liberar
     if (topeMemoria == NULL) {
         cout << "No hay memoria para liberar.\n";
         return;
     }
 
     BloqueMemoria* temp = topeMemoria;
-    // POP Mover el tope al siguiente elemento
     topeMemoria = topeMemoria->siguiente;
 
     cout << "Memoria liberada del proceso ID: " << temp->idProceso << ", TamaÃ±o: " << temp->tamano << " MB\n";
@@ -69,27 +57,24 @@ void liberarMemoria() {
 
 // Ver contenido de la pila de memoria
 void verMemoria() {
-	// Verificar si la pila está vacía
     if (topeMemoria == NULL) {
         cout << "La pila de memoria estÃ¡ vacÃ­a.\n";
         return;
     }
 
     cout << "Contenido de la pila de memoria (LIFO):\n";
-    // Recorrer desde el tope hacia abajo
     BloqueMemoria* actual = topeMemoria;
     while (actual != NULL) {
         cout << "-----------------------------\n";
         cout << "ID Proceso: " << actual->idProceso << "\n";
         cout << "TamaÃ±o: " << actual->tamano << " MB\n";
-        actual = actual->siguiente; // Avanzar al siguiente bloque
+        actual = actual->siguiente;
     }
 }
 
 
 // Insertar proceso al final
 void insertarProceso() {
-	// Crear nuevo nodo
     Proceso* nuevo = new Proceso();
     
     cout << "ID del proceso: ";
@@ -116,7 +101,6 @@ void insertarProceso() {
         while (actual->siguiente != NULL) {
             actual = actual->siguiente;
         }
-        // Conectar el nuevo nodo al final
         actual->siguiente = nuevo;
     }
 
@@ -128,7 +112,7 @@ void buscarProcesoPorID() {
     int id;
     cout << "Ingrese el ID a buscar: ";
     cin >> id;
-    // Recorrer la lista buscando el ID
+
     Proceso* actual = inicio;
     while (actual != NULL) {
         if (actual->id == id) {
@@ -139,7 +123,7 @@ void buscarProcesoPorID() {
             cout << "Estado: " << actual->estado << "\n";
             return;
         }
-        actual = actual->siguiente;// Continuar búsqueda
+        actual = actual->siguiente;
     }
     cout << "Proceso no encontrado.\n";
 }
@@ -149,7 +133,7 @@ void modificarProceso() {
     int id;
     cout << "Ingrese el ID del proceso a modificar: ";
     cin >> id;
-   // Buscar el proceso
+
     Proceso* actual = inicio;
     while (actual != NULL) {
         if (actual->id == id) {
@@ -185,9 +169,9 @@ void eliminarProceso() {
     cout << "Ingrese el ID del proceso a eliminar: ";
     cin >> id;
 
-    Proceso* actual = inicio; // Puntero al nodo actual
-    Proceso* anterior = NULL;// Puntero al nodo anterior
-  	// Buscar el nodo a eliminar
+    Proceso* actual = inicio;
+    Proceso* anterior = NULL;
+
     while (actual != NULL && actual->id != id) {
         anterior = actual;
         actual = actual->siguiente;
@@ -211,7 +195,6 @@ void eliminarProceso() {
 // Mostrar todos los procesos
 void mostrarProcesos() {
     Proceso* actual = inicio;
-    // Verificar si hay procesos
     if (actual == NULL) {
         cout << "No hay procesos registrados.\n";
         return;
@@ -227,121 +210,86 @@ void mostrarProcesos() {
         actual = actual->siguiente;
     }
 }
+void encolarProcesoDesdeRegistrados() {
+    int id;
+    cout << "Ingrese el ID del proceso que desea encolar: ";
+    cin >> id;
 
-//FUNCION PARA ENCOLAR PROCESOS 
-void encolarProceso() {  
- //crear un nuevo nodo para el proceso 
-    ProcesoCola* nuevo = new ProcesoCola();
-    
-    cout << "=== ENCOLAR PROCESO EN COLA DE PRIORIDAD ===\n";
-    cout << "ID del proceso: ";
-    cin >> nuevo->id;
-    cin.ignore();// Limpiar el buffer de entrada
+    // Buscar en la lista de procesos registrados
+    Proceso* buscado = inicio;
+    while (buscado != NULL && buscado->id != id) {
+        buscado = buscado->siguiente;
+    }
 
-    cout << "Nombre del proceso: ";
-    cin.getline(nuevo->nombre, 30);
+    if (buscado == NULL) {
+        cout << "Proceso no encontrado en la lista registrada.\n";
+        return;
+    }
 
-    cout << "Prioridad (1=Alta, 2=Media-Alta, 3=Media, 4=Media-Baja, 5=Baja): ";
-    cin >> nuevo->prioridad;
+    // Crear una copia del proceso
+    Proceso* nuevo = new Proceso();
+    *nuevo = *buscado; // Copiar todos los datos
+    nuevo->siguiente = NULL; // Romper cualquier enlace anterior
 
-    cout << "Tamaño de memoria (MB): ";
-    cin >> nuevo->tamanoMemoria;
-
-    cin.ignore();
-    cout << "Estado (nuevo, listo, ejecutando, bloqueado, finalizado): ";
-    cin.getline(nuevo->estado, 15);
-
-    nuevo->siguiente = NULL;// Inicializar puntero siguiente
-    
-    
-//PARA UNA INSERCION ORDENADA
-    // Insertar en la posicion correcta segun prioridad
-    if (inicioCola == NULL || nuevo->prioridad < inicioCola->prioridad) {
-        // Insertar al inicio si la cola esta vacia o tiene mayor prioridad
-        nuevo->siguiente = inicioCola;
-        inicioCola = nuevo;
+    // Insertar en la cola ordenada por prioridad
+    if (frenteCola == NULL || nuevo->prioridad < frenteCola->prioridad) {
+        nuevo->siguiente = frenteCola;
+        frenteCola = nuevo;
     } else {
-        // Buscar la posicion correcta
-        ProcesoCola* actual = inicioCola;
-        // Recorrer hasta encontrar donde insertar
+        Proceso* actual = frenteCola;
         while (actual->siguiente != NULL && actual->siguiente->prioridad <= nuevo->prioridad) {
             actual = actual->siguiente;
         }
-        // Insertar el nuevo nodo en la posición encontrada
         nuevo->siguiente = actual->siguiente;
         actual->siguiente = nuevo;
     }
 
-    cout << "Proceso encolado correctamente según prioridad.\n";
+    cout << "Proceso encolado desde registros existentes.\n";
 }
 
-//FUNCION PARA DESENCOLAR PROCESOS 
-void desencolarProceso() {
-    cout << "=== DESENCOLAR PROCESO DE MAYOR PRIORIDAD ===\n";
-    // Verificar si la cola esta vacia
-    if (inicioCola == NULL) {
-        cout << "La cola de prioridad esta vacia.\n";
-        return;
-    }
-	// Guardar referencia al proceso a eliminar
-    ProcesoCola* procesoDesencolado = inicioCola;
-    // Mover el puntero inicio al siguiente proceso
-    inicioCola = inicioCola->siguiente;
-	// Mostrar información del proceso desencolado
-    cout << "Proceso desencolado:\n";
-    cout << "-----------------------------\n";
-    cout << "ID: " << procesoDesencolado->id << "\n";
-    cout << "Nombre: " << procesoDesencolado->nombre << "\n";
-    cout << "Prioridad: " << procesoDesencolado->prioridad << "\n";
-    cout << "Tamaño Memoria: " << procesoDesencolado->tamanoMemoria << " MB\n";
-    cout << "Estado: " << procesoDesencolado->estado << "\n";
-    cout << "-----------------------------\n";
-	// Liberar la memoria del nodo eliminado
-    delete procesoDesencolado;
-    cout << "Proceso eliminado de la cola de prioridad.\n";
-}
 
-//FUNCION PARA MOSTRAR COLA 
-void mostrarCola() {
-    cout << "=== COLA DE PRIORIDAD ===\n";
-    // Verificar si la cola esta vacia
-    if (inicioCola == NULL) {
-        cout << "La cola de prioridad esta vacia.\n";
+
+void desencolarProcesoPorPrioridad() {
+    if (frenteCola == NULL) {
+        cout << "La cola estÃ¡ vacÃ­a. No hay procesos para eliminar.\n";
         return;
     }
 
-    cout << "Procesos en cola (ordenados por prioridad):\n";
-    ProcesoCola* actual = inicioCola; // Puntero para recorrer la lista
-    int posicion = 1;   // Contador de posicion
-    
-    // BUCLE DE RECORRIDO
+    Proceso* eliminado = frenteCola;
+    frenteCola = frenteCola->siguiente;
+
+    cout << "Proceso eliminado (mayor prioridad):\n";
+    cout << "ID: " << eliminado->id << "\n";
+    cout << "Nombre: " << eliminado->nombre << "\n";
+    cout << "Prioridad: " << eliminado->prioridad << "\n";
+    cout << "Estado: " << eliminado->estado << "\n";
+
+    delete eliminado;
+}
+
+void mostrarColaPrioridad() {
+    if (frenteCola == NULL) {
+        cout << "La cola de prioridad estÃ¡ vacÃ­a.\n";
+        return;
+    }
+
+    cout << "\nProcesos en la cola de prioridad (mayor prioridad al inicio):\n";
+    Proceso* actual = frenteCola;
     while (actual != NULL) {
-        cout << "\n--- Posición " << posicion << " ---\n";
+        cout << "-----------------------------\n";
         cout << "ID: " << actual->id << "\n";
         cout << "Nombre: " << actual->nombre << "\n";
-        cout << "Prioridad: " << actual->prioridad;
-        
-        // Mostrar descripcion de la prioridad
-        switch(actual->prioridad) {
-            case 1: cout << " (Alta)"; break;
-            case 2: cout << " (Media-Alta)"; break;
-            case 3: cout << " (Media)"; break;
-            case 4: cout << " (Media-Baja)"; break;
-            case 5: cout << " (Baja)"; break;
-        }
-        
-        cout << "\nTamaño Memoria: " << actual->tamanoMemoria << " MB\n";
+        cout << "Prioridad: " << actual->prioridad << "\n";
         cout << "Estado: " << actual->estado << "\n";
-        // Avanzar al siguiente nodo
         actual = actual->siguiente;
-        posicion++;
     }
 }
+
 
 // MenÃº principal
 int main() {
     int opcion;
- 	// BUCLE PRINCIPAL: continua hasta que el usuario elija salir
+
     do {
         cout << "\n=== Administrador de Tareas ===\n";
         cout << "1. Insertar proceso\n";
@@ -352,13 +300,13 @@ int main() {
         cout << "6. Asignar memoria\n";
         cout << "7. Liberar memoria\n";
         cout << "8. Ver pila de memoria\n";
-        cout << "9. Encolar proceso (por prioridad)\n";
-        cout << "10. Desencolar proceso (mayor prioridad)\n";
+        cout << "9. Encolar proceso por prioridad\n";
+        cout << "10. Desencolar proceso con mayor prioridad\n";
         cout << "11. Mostrar cola de prioridad\n";
         cout << "0. Salir\n";
         cout << "Seleccione una opciÃ³n: ";
         cin >> opcion;
-        cin.ignore();// Limpiar buffer
+        cin.ignore();
 
         switch (opcion) {
             case 1:
@@ -385,15 +333,15 @@ int main() {
             case 8:
                 verMemoria();
                 break;
-                
+            
             case 9:
-                encolarProceso();
+                encolarProcesoDesdeRegistrados();
                 break;
             case 10:
-                desencolarProceso();
+                desencolarProcesoPorPrioridad();
                 break;
             case 11:
-                mostrarCola();
+                mostrarColaPrioridad();
                 break;
 
             case 0:
@@ -403,7 +351,7 @@ int main() {
                 cout << "OpciÃ³n no vÃ¡lida.\n";
         }
 
-    } while (opcion != 0); // repetir mientras no sea 0
+    } while (opcion != 0);
 
     return 0;
 }
