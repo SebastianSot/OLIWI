@@ -5,14 +5,18 @@ using namespace std;
 struct Nodo {
     int id;                  // ID único del miembro
     string nombre;           // Nombre del miembro
-    string genero;           // Género del miembro
+    char genero;           // Género del miembro
     int anioNacimiento;      // Año de nacimiento
     Nodo* izquierda;         // Puntero al hijo izquierdo
     Nodo* derecha;           // Puntero al hijo derecho
 };
 
+
+//PROTOTIPOS
+void crearNodo();
+void insertarNodo();
 // Función para crear un nuevo nodo
-Nodo* crearNodo(int id, string nombre, string genero, int anioNacimiento) {
+Nodo* crearNodo(int id, string nombre, char genero, int anioNacimiento) {
     Nodo* nuevo = new Nodo;
     nuevo->id = id;
     nuevo->nombre = nombre;
@@ -24,7 +28,7 @@ Nodo* crearNodo(int id, string nombre, string genero, int anioNacimiento) {
 }
 
 // Inserta un nodo en el ABB según el ID
-Nodo* insertar(Nodo* raiz, Nodo* nuevo) {
+void insertarNodo(Nodo* raiz, Nodo* nuevo) {
     if (raiz == NULL)
         return nuevo;
 
