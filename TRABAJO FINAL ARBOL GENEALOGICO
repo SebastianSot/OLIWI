@@ -1,3 +1,67 @@
+#include <iostream> 
+using namespace std;
+
+// Estructura para cada miembro de la civilizaci n
+struct Nodo {
+    int id;                  // ID  nico del miembro
+    string nombre;           // Nombre del miembro
+    string genero;           // G nero del miembro
+    int anioNacimiento;      // A o de nacimiento
+    Nodo* izquierda;         // Puntero al hijo izquierdo
+    Nodo* derecha;           // Puntero al hijo derecho
+};
+
+// Crear un nuevo nodo
+Nodo* crearNodo(int id, string nombre, string genero, int anioNacimiento) {
+    Nodo* nuevo = new Nodo;
+    nuevo->id = id;
+    nuevo->nombre = nombre;
+    nuevo->genero = genero;
+    nuevo->anioNacimiento = anioNacimiento;
+    nuevo->izquierda = NULL;
+    nuevo->derecha = NULL;
+    return nuevo;
+}
+
+// Inserta un nodo en el ABB seg n el ID
+Nodo* insertar(Nodo* raiz, Nodo* nuevo) {
+    if (raiz == NULL)
+        return nuevo;
+
+    if (nuevo->id < raiz->id)
+        raiz->izquierda = insertar(raiz->izquierda, nuevo);
+    else if (nuevo->id > raiz->id)
+        raiz->derecha = insertar(raiz->derecha, nuevo);
+    else
+        cout << "ID duplicado. No se puede insertar.\n";
+
+    return raiz;
+}
+
+// Buscar un miembro por ID
+Nodo* buscarPorID(Nodo* raiz, int id) {
+    if (raiz == NULL || raiz->id == id)
+        return raiz;
+
+    if (id < raiz->id)
+        return buscarPorID(raiz->izquierda, id);
+    else
+        return buscarPorID(raiz->derecha, id);
+}
+
+// Buscar por nombre (recorrido en profundidad)
+Nodo* buscarPorNombre(Nodo* raiz, string nombre) {
+    if (raiz == NULL)
+        return NULL;
+    if (raiz->nombre == nombre)
+        return raiz;
+
+    Nodo* izq = buscarPorNombre(raiz->izquierda, nombre);
+    if (izq != NULL) return izq;
+
+    return buscarPorNombre(raiz->derecha, nombre);
+}
+
 // Eliminar un nodo del ABB
 Nodo* eliminar(Nodo* raiz, int id) {
     if (raiz == NULL) return NULL;
