@@ -1,1 +1,56 @@
+// Eliminar un nodo del ABB
+Nodo* eliminar(Nodo* raiz, int id) {
+    if (raiz == NULL) return NULL;
 
+    if (id < raiz->id)
+        raiz->izquierda = eliminar(raiz->izquierda, id);
+    else if (id > raiz->id)
+        raiz->derecha = eliminar(raiz->derecha, id);
+    else {
+        // Nodo con un hijo o sin hijos
+        if (raiz->izquierda == NULL) {
+            Nodo* temp = raiz->derecha;
+            delete raiz;
+            return temp;
+        }
+        else if (raiz->derecha == NULL) {
+            Nodo* temp = raiz->izquierda;
+            delete raiz;
+            return temp;
+        }
+
+        // Nodo con dos hijos: se reemplaza por su sucesor
+        Nodo* temp = minimo(raiz->derecha);
+        raiz->id = temp->id;
+        raiz->nombre = temp->nombre;
+        raiz->genero = temp->genero;
+        raiz->anioNacimiento = temp->anioNacimiento;
+        raiz->derecha = eliminar(raiz->derecha, temp->id);
+    }
+    return raiz;
+}
+
+// Recorridos del árbol
+void inorden(Nodo* raiz) {
+    if (raiz != NULL) {
+        inorden(raiz->izquierda);
+        cout << raiz->nombre << " (" << raiz->id << ")\n";
+        inorden(raiz->derecha);
+    }
+}
+
+void preorden(Nodo* raiz) {
+    if (raiz != NULL) {
+        cout << raiz->nombre << " (" << raiz->id << ")\n";
+        preorden(raiz->izquierda);
+        preorden(raiz->derecha);
+    }
+}
+
+void postorden(Nodo* raiz) {
+    if (raiz != NULL) {
+        postorden(raiz->izquierda);
+        postorden(raiz->derecha);
+        cout << raiz->nombre << " (" << raiz->id << ")\n";
+    }
+}
