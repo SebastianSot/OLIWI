@@ -1,12 +1,12 @@
 #include <iostream> 
 using namespace std;
 
-// Estructura para cada miembro de la civilización
+// Estructura para cada miembro de la civilizaciÃ³n
 struct Nodo {
-    int id;                  // ID único del miembro
+    int id;                  // ID Ãºnico del miembro
     string nombre;           // Nombre del miembro
-    char genero;           // Género del miembro
-    int anioNacimiento;      // Año de nacimiento
+    char genero;           // GÃ©nero del miembro
+    int anioNacimiento;      // AÃ±o de nacimiento
     Nodo* izquierda;         // Puntero al hijo izquierdo
     Nodo* derecha;           // Puntero al hijo derecho
 };
@@ -15,7 +15,7 @@ struct Nodo {
 //PROTOTIPOS
 void crearNodo();
 void insertarNodo();
-// Función para crear un nuevo nodo
+// FunciÃ³n para crear un nuevo nodo
 Nodo* crearNodo(int id, string nombre, char genero, int anioNacimiento) {
     Nodo* nuevo = new Nodo;
     nuevo->id = id;
@@ -27,7 +27,7 @@ Nodo* crearNodo(int id, string nombre, char genero, int anioNacimiento) {
     return nuevo;
 }
 
-// Inserta un nodo en el ABB según el ID
+// Inserta un nodo en el ABB segÃºn el ID
 void insertarNodo(Nodo* raiz, Nodo* nuevo) {
     if (raiz == NULL)
         return nuevo;
@@ -66,7 +66,7 @@ Nodo* buscarPorNombre(Nodo* raiz, string nombre) {
     return buscarPorNombre(raiz->derecha, nombre);
 }
 
-// Mostrar ancestros desde la raíz hasta el nodo
+// Mostrar ancestros desde la raÃ­z hasta el nodo
 bool mostrarAncestros(Nodo* raiz, int id) {
     if (raiz == NULL)
         return false;
@@ -91,7 +91,7 @@ void mostrarDescendientes(Nodo* nodo) {
     mostrarDescendientes(nodo->derecha);
 }
 
-// Buscar el nodo mínimo (usado al eliminar nodos con 2 hijos)
+// Buscar el nodo mÃ­nimo (usado al eliminar nodos con 2 hijos)
 Nodo* minimo(Nodo* nodo) {
     while (nodo->izquierda != NULL)
         nodo = nodo->izquierda;
@@ -130,7 +130,7 @@ Nodo* eliminar(Nodo* raiz, int id) {
     return raiz;
 }
 
-// Recorridos del árbol
+// Recorridos del Ã¡rbol
 void inorden(Nodo* raiz) {
     if (raiz != NULL) {
         inorden(raiz->izquierda);
@@ -169,5 +169,102 @@ bool esDescendiente(Nodo* raiz, int a, int b) {
     if (nodoB == NULL) return false;
 
     return buscarPorID(nodoB, a) != NULL;
+}
+
+int main() {
+    Nodo* raiz = NULL;
+    int opcion;
+
+    do {
+        cout << "\n--- MENU ---\n";
+        cout << "1. Insertar miembro\n";
+        cout << "2. Buscar miembro\n";
+        cout << "3. Mostrar ancestros\n";
+        cout << "4. Mostrar descendientes\n";
+        cout << "5. Eliminar miembro\n";
+        cout << "6. Mostrar arbol completo\n";
+        cout << "7. Verificar relacion\n";
+        cout << "0. Salir\n";
+        cout << "Opcion: ";
+        cin >> opcion;
+
+        if (opcion == 1) {
+            int id, anio;
+            string nombre, genero;
+            cout << "ID: "; cin >> id;
+            cin.ignore();
+            cout << "Nombre: "; getline(cin, nombre);
+            cout << "Genero: "; getline(cin, genero);
+            cout << "Anio de nacimiento: "; cin >> anio;
+
+            Nodo* nuevo = crearNodo(id, nombre, genero, anio);
+            raiz = insertar(raiz, nuevo);
+        }
+
+        else if (opcion == 2) {
+            int id;
+            cout << "ID a buscar: ";
+            cin >> id;
+            Nodo* encontrado = buscarPorID(raiz, id);
+            if (encontrado)
+                cout << "Nombre: " << encontrado->nombre << ", Genero: " << encontrado->genero << ", Nacimiento: " << encontrado->anioNacimiento << endl;
+            else
+                cout << "No encontrado.\n";
+        }
+
+        else if (opcion == 3) {
+            int id;
+            cout << "ID del miembro: ";
+            cin >> id;
+            if (!mostrarAncestros(raiz, id))
+                cout << "No se encontraron ancestros o ID no existe.\n";
+            else
+                cout << "(Fin)\n";
+        }
+
+        else if (opcion == 4) {
+            int id;
+            cout << "ID del miembro: ";
+            cin >> id;
+            Nodo* nodo = buscarPorID(raiz, id);
+            if (nodo)
+                mostrarDescendientes(nodo);
+            else
+                cout << "Miembro no encontrado.\n";
+        }
+
+        else if (opcion == 5) {
+            int id;
+            cout << "ID a eliminar: ";
+            cin >> id;
+            raiz = eliminar(raiz, id);
+        }
+
+        else if (opcion == 6) {
+            int tipo;
+            cout << "1. Inorden\n2. Preorden\n3. Postorden\nElegir tipo: ";
+            cin >> tipo;
+            if (tipo == 1) inorden(raiz);
+            else if (tipo == 2) preorden(raiz);
+            else if (tipo == 3) postorden(raiz);
+            else cout << "Tipo invalido.\n";
+        }
+
+        else if (opcion == 7) {
+            int a, b;
+            cout << "ID del primer miembro: "; cin >> a;
+            cout << "ID del segundo miembro: "; cin >> b;
+
+            if (esAncestro(raiz, a, b))
+                cout << a << " es ancestro de " << b << endl;
+            else if (esDescendiente(raiz, a, b))
+                cout << a << " es descendiente de " << b << endl;
+            else
+                cout << "No hay relacion directa.\n";
+        }
+
+    } while (opcion != 0);
+
+    return 0;
 }
 
