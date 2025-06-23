@@ -62,6 +62,38 @@ Nodo* buscarPorNombre(Nodo* raiz, string nombre) {
     return buscarPorNombre(raiz->derecha, nombre);
 }
 
+// Mostrar ancestros desde la raíz hasta el nodo
+bool mostrarAncestros(Nodo* raiz, int id) {
+    if (raiz == NULL)
+        return false;
+
+    if (raiz->id == id)
+        return true;
+
+    if (mostrarAncestros(raiz->izquierda, id) || mostrarAncestros(raiz->derecha, id)) {
+        cout << raiz->nombre << " -> ";
+        return true;
+    }
+
+    return false;
+}
+
+// Mostrar descendientes en preorden (nodo, izq, der)
+void mostrarDescendientes(Nodo* nodo) {
+    if (nodo == NULL) return;
+
+    cout << nodo->nombre << " (" << nodo->id << ")\n";
+    mostrarDescendientes(nodo->izquierda);
+    mostrarDescendientes(nodo->derecha);
+}
+
+// Buscar el nodo mínimo (usado al eliminar nodos con 2 hijos)
+Nodo* minimo(Nodo* nodo) {
+    while (nodo->izquierda != NULL)
+        nodo = nodo->izquierda;
+    return nodo;
+}
+
 // Eliminar un nodo del ABB
 Nodo* eliminar(Nodo* raiz, int id) {
     if (raiz == NULL) return NULL;
@@ -118,6 +150,7 @@ void postorden(Nodo* raiz) {
         cout << raiz->nombre << " (" << raiz->id << ")\n";
     }
 }
+
 // Verifica si un nodo A es ancestro de B
 bool esAncestro(Nodo* raiz, int a, int b) {
     Nodo* nodoA = buscarPorID(raiz, a);
