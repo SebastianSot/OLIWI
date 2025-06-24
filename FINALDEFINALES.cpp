@@ -11,7 +11,7 @@ struct Nodo {
     Nodo* derecha;           // Puntero al hijo derecho
 };
 
-// Crear un nuevo nodo
+// Funci n para crear un nuevo nodo
 Nodo* crearNodo(int id, string nombre, string genero, int anioNacimiento) {
     Nodo* nuevo = new Nodo;
     nuevo->id = id;
@@ -62,7 +62,7 @@ Nodo* buscarPorNombre(Nodo* raiz, string nombre) {
     return buscarPorNombre(raiz->derecha, nombre);
 }
 
-// Mostrar ancestros desde la raíz hasta el nodo
+// Mostrar ancestros desde la ra z hasta el nodo
 bool mostrarAncestros(Nodo* raiz, int id) {
     if (raiz == NULL)
         return false;
@@ -87,7 +87,7 @@ void mostrarDescendientes(Nodo* nodo) {
     mostrarDescendientes(nodo->derecha);
 }
 
-// Buscar el nodo mínimo (usado al eliminar nodos con 2 hijos)
+// Buscar el nodo m nimo (usado al eliminar nodos con 2 hijos)
 Nodo* minimo(Nodo* nodo) {
     while (nodo->izquierda != NULL)
         nodo = nodo->izquierda;
@@ -126,7 +126,7 @@ Nodo* eliminar(Nodo* raiz, int id) {
     return raiz;
 }
 
-// Recorridos del árbol
+// Recorridos del  rbol
 void inorden(Nodo* raiz) {
     if (raiz != NULL) {
         inorden(raiz->izquierda);
