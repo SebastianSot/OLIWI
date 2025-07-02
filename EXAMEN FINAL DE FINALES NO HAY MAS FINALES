@@ -1,12 +1,12 @@
-#include <iostream>
+#include <iostream> 
 using namespace std;
 
-// Definición de nodo
+// Estructura de un nodo del árbol binario
 struct Nodo {
-    int valor;
-    string mensaje;
-    Nodo* izquierdo;
-    Nodo* derecho;
+    int valor;           
+    string mensaje;      
+    Nodo* izquierdo;     
+    Nodo* derecho;       
 };
 
 // Función para crear un nuevo nodo con su mensaje correspondiente
@@ -15,10 +15,10 @@ Nodo* crearNodo(int valor) {
     nuevo->valor = valor;
     nuevo->izquierdo = NULL;
     nuevo->derecho = NULL;
-    
-    // Asignar el mensaje correspondiente según el valor del nodo
+
+    // Asigna el mensaje al nodo según su valor
     switch(valor) {
-        case 8: nuevo->mensaje = "Practica futbol"; break;
+        case 8:  nuevo->mensaje = "Practica futbol"; break;
         case 12: nuevo->mensaje = "Practica DEPORTES DE EQUIPO"; break;
         case 15: nuevo->mensaje = "Practica VOLEIBOL"; break;
         case 20: nuevo->mensaje = "Te interesa el deporte"; break;
@@ -27,40 +27,46 @@ Nodo* crearNodo(int valor) {
         case 35: nuevo->mensaje = "Practica TENIS"; break;
         default: nuevo->mensaje = "Nodo no reconocido"; break;
     }
-    
-    return nuevo;
+
+    return nuevo; // Retorna el puntero al nuevo nodo
 }
 
-// Función para verificar si un valor está permitido
+// Verifica si el valor ingresado es uno de los permitidos
 bool esValorPermitido(int valor) {
     const int valoresPermitidos[] = {8, 12, 15, 20, 25, 30, 35};
     for (int i = 0; i < 7; ++i) {
-        if (valor == valoresPermitidos[i]) return true;
+        if (valor == valoresPermitidos[i])
+            return true;
     }
     return false;
 }
 
-// Función para insertar en el árbol binario
+// Inserta un valor en el árbol binario, manteniendo el orden
 Nodo* insertar(Nodo* raiz, int valor) {
+    // Verifica si el valor es válido
     if (!esValorPermitido(valor)) {
         cout << "Error: Solo se permiten los valores 8, 12, 15, 20, 25, 30, 35." << endl;
         return raiz;
     }
-    
+
+    // Si el árbol está vacío, se inserta aquí
     if (raiz == NULL) {
         cout << "Nodo " << valor << " insertado correctamente." << endl;
         return crearNodo(valor);
     }
+
+    // Inserción recursiva según valor (izquierda si es menor, derecha si es mayor)
     if (valor < raiz->valor)
         raiz->izquierdo = insertar(raiz->izquierdo, valor);
     else if (valor > raiz->valor)
         raiz->derecho = insertar(raiz->derecho, valor);
     else
         cout << "Elemento ya existente." << endl;
+
     return raiz;
 }
 
-// Recorridos
+// Recorrido inorden: izquierda - raíz - derecha
 void inOrden(Nodo* raiz) {
     if (raiz != NULL) {
         inOrden(raiz->izquierdo);
@@ -69,6 +75,7 @@ void inOrden(Nodo* raiz) {
     }
 }
 
+// Recorrido preorden: raíz - izquierda - derecha
 void preOrden(Nodo* raiz) {
     if (raiz != NULL) {
         cout << raiz->valor << " ";
@@ -77,6 +84,7 @@ void preOrden(Nodo* raiz) {
     }
 }
 
+// Recorrido postorden: izquierda - derecha - raíz
 void postOrden(Nodo* raiz) {
     if (raiz != NULL) {
         postOrden(raiz->izquierdo);
@@ -85,7 +93,7 @@ void postOrden(Nodo* raiz) {
     }
 }
 
-// Mostrar mensajes según el árbol de decisión
+// Recorre el árbol inorden mostrando solo los mensajes de cada nodo
 void mostrarDecision(Nodo* raiz) {
     if (raiz != NULL) {
         mostrarDecision(raiz->izquierdo);
@@ -94,8 +102,7 @@ void mostrarDecision(Nodo* raiz) {
     }
 }
 
-
-// Buscar nodo en el árbol
+// Función para buscar un valor en el árbol 
 bool buscar(Nodo* raiz, int valor) {
     if (raiz == NULL)
         return false;
@@ -107,15 +114,37 @@ bool buscar(Nodo* raiz, int valor) {
         return buscar(raiz->derecho, valor);
 }
 
-// Menú principal
+// Recorre el árbol mostrando solo los mensajes desde la raíz hasta el valor objetivo
+bool mostrarRutaDecision(Nodo* raiz, int valor) {
+    if (raiz == NULL)
+        return false;
+
+    // Muestra el mensaje del nodo actual
+    cout << raiz->mensaje << endl;
+
+    // Si es el nodo buscado, termina
+    if (raiz->valor == valor)
+        return true;
+
+    // Busca en el subárbol izquierdo o derecho
+    if ((valor < raiz->valor && mostrarRutaDecision(raiz->izquierdo, valor)) ||
+        (valor > raiz->valor && mostrarRutaDecision(raiz->derecho, valor)))
+        return true;
+
+    // Si no está en el camino, retrocede (quita el mensaje mostrado)
+    return false;
+}
+
+// Función principal que muestra el menú y controla la interacción del usuario
 int main() {
-    Nodo* raiz = NULL;
+    Nodo* raiz = NULL; 
     int opcion, valor;
 
-    // Insertar el nodo raíz 20 primero para asegurar la estructura correcta
+    // Inserta primero el nodo raíz con valor 20 para formar la base del árbol
     raiz = insertar(raiz, 20);
 
     do {
+        // Menú de opciones
         cout << "\n********************" << endl;
         cout << "Menu" << endl;
         cout << "1 Insertar nodo (valores permitidos: 8,12,15,25,30,35)" << endl;
@@ -127,6 +156,7 @@ int main() {
         cout << "\nSeleccione opcion: ";
         cin >> opcion;
 
+        // Ejecuta la opción seleccionada por el usuario
         switch (opcion) {
             case 1:
                 cout << "Ingrese nodo (valores permitidos: 8,12,15,25,30,35): ";
@@ -153,8 +183,17 @@ int main() {
                 break;
 
             case 5:
-                cout << "Mensajes del árbol de decisiones:" << endl;
-                mostrarDecision(raiz);
+                cout << "Ingrese el valor del nodo al que desea llegar (8,12,15,25,30,35): ";
+                cin >> valor;
+
+                if (!esValorPermitido(valor) || valor == 20) {
+                cout << "Valor no válido o es la raíz. Intente con otro." << endl;
+                 } else if (!buscar(raiz, valor)) {
+                        cout << "El nodo no se encuentra en el árbol." << endl;
+                } else {
+                       cout << "Mensajes del recorrido hasta el nodo " << valor << ":" << endl;
+                       mostrarRutaDecision(raiz, valor);
+                }
                 break;
 
 
@@ -166,7 +205,10 @@ int main() {
                 cout << "Opción inválida. Intente nuevamente." << endl;
         }
 
-    } while (opcion != 6);
+    } while (opcion != 6); // Repite hasta que el usuario decida salir
 
-    return 0;
+    return 0; 
+    
 }
+
+
