@@ -1,0 +1,172 @@
+#include <iostream>
+using namespace std;
+
+// Definición de nodo
+struct Nodo {
+    int valor;
+    string mensaje;
+    Nodo* izquierdo;
+    Nodo* derecho;
+};
+
+// Función para crear un nuevo nodo con su mensaje correspondiente
+Nodo* crearNodo(int valor) {
+    Nodo* nuevo = new Nodo();
+    nuevo->valor = valor;
+    nuevo->izquierdo = NULL;
+    nuevo->derecho = NULL;
+    
+    // Asignar el mensaje correspondiente según el valor del nodo
+    switch(valor) {
+        case 8: nuevo->mensaje = "Practica futbol"; break;
+        case 12: nuevo->mensaje = "Practica DEPORTES DE EQUIPO"; break;
+        case 15: nuevo->mensaje = "Practica VOLEIBOL"; break;
+        case 20: nuevo->mensaje = "Te interesa el deporte"; break;
+        case 25: nuevo->mensaje = "Practica natacion"; break;
+        case 30: nuevo->mensaje = "Practica DEPORTES INDIVIDUALES"; break;
+        case 35: nuevo->mensaje = "Practica TENIS"; break;
+        default: nuevo->mensaje = "Nodo no reconocido"; break;
+    }
+    
+    return nuevo;
+}
+
+// Función para verificar si un valor está permitido
+bool esValorPermitido(int valor) {
+    const int valoresPermitidos[] = {8, 12, 15, 20, 25, 30, 35};
+    for (int i = 0; i < 7; ++i) {
+        if (valor == valoresPermitidos[i]) return true;
+    }
+    return false;
+}
+
+// Función para insertar en el árbol binario
+Nodo* insertar(Nodo* raiz, int valor) {
+    if (!esValorPermitido(valor)) {
+        cout << "Error: Solo se permiten los valores 8, 12, 15, 20, 25, 30, 35." << endl;
+        return raiz;
+    }
+    
+    if (raiz == NULL) {
+        cout << "Nodo " << valor << " insertado correctamente." << endl;
+        return crearNodo(valor);
+    }
+    if (valor < raiz->valor)
+        raiz->izquierdo = insertar(raiz->izquierdo, valor);
+    else if (valor > raiz->valor)
+        raiz->derecho = insertar(raiz->derecho, valor);
+    else
+        cout << "Elemento ya existente." << endl;
+    return raiz;
+}
+
+// Recorridos
+void inOrden(Nodo* raiz) {
+    if (raiz != NULL) {
+        inOrden(raiz->izquierdo);
+        cout << raiz->valor << " ";
+        inOrden(raiz->derecho);
+    }
+}
+
+void preOrden(Nodo* raiz) {
+    if (raiz != NULL) {
+        cout << raiz->valor << " ";
+        preOrden(raiz->izquierdo);
+        preOrden(raiz->derecho);
+    }
+}
+
+void postOrden(Nodo* raiz) {
+    if (raiz != NULL) {
+        postOrden(raiz->izquierdo);
+        postOrden(raiz->derecho);
+        cout << raiz->valor << " ";
+    }
+}
+
+// Mostrar mensajes según el árbol de decisión
+void mostrarDecision(Nodo* raiz) {
+    if (raiz != NULL) {
+        mostrarDecision(raiz->izquierdo);
+        cout << raiz->valor << ": " << raiz->mensaje << endl;
+        mostrarDecision(raiz->derecho);
+    }
+}
+
+
+// Buscar nodo en el árbol
+bool buscar(Nodo* raiz, int valor) {
+    if (raiz == NULL)
+        return false;
+    if (raiz->valor == valor)
+        return true;
+    else if (valor < raiz->valor)
+        return buscar(raiz->izquierdo, valor);
+    else
+        return buscar(raiz->derecho, valor);
+}
+
+// Menú principal
+int main() {
+    Nodo* raiz = NULL;
+    int opcion, valor;
+
+    // Insertar el nodo raíz 20 primero para asegurar la estructura correcta
+    raiz = insertar(raiz, 20);
+
+    do {
+        cout << "\n********************" << endl;
+        cout << "Menu" << endl;
+        cout << "1 Insertar nodo (valores permitidos: 8,12,15,25,30,35)" << endl;
+        cout << "2 Mostrar inorden" << endl;
+        cout << "3 Mostrar preorden" << endl;
+        cout << "4 Mostrar postorden" << endl;
+        cout << "5 Decision" << endl;
+        cout << "6 Salir" << endl;
+        cout << "\nSeleccione opcion: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                cout << "Ingrese nodo (valores permitidos: 8,12,15,25,30,35): ";
+                cin >> valor;
+                raiz = insertar(raiz, valor);
+                break;
+
+            case 2:
+                cout << "Recorrido Inorden: ";
+                inOrden(raiz);
+                cout << endl;
+                break;
+
+            case 3:
+                cout << "Recorrido Preorden: ";
+                preOrden(raiz);
+                cout << endl;
+                break;
+
+            case 4:
+                cout << "Recorrido Postorden: ";
+                postOrden(raiz);
+                cout << endl;
+                break;
+
+            case 5:
+                cout << "Mensajes del árbol de decisiones:" << endl;
+                mostrarDecision(raiz);
+                break;
+
+
+            case 6:
+                cout << "Saliendo del programa." << endl;
+                break;
+
+            default:
+                cout << "Opción inválida. Intente nuevamente." << endl;
+        }
+
+    } while (opcion != 6);
+
+    return 0;
+}
