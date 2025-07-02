@@ -1,2 +1,9 @@
 #include <iosteam>
 using namespace;
+// Definimos el nodo
+struct Nodo {
+    int valor;
+    string mensaje;
+    Nodo* izquierdo;
+    Nodo* derecho;
+};
